@@ -1,0 +1,28 @@
+{
+  "name": "indicator-app",
+  "version": "1.0.0",
+  "description": "Modern web-based technical analysis terminal with live multi-exchange WebSocket feeds and custom charting studies.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "lightweight-charts": "^5.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "vite": "^5.2.0"
+  },
+  "keywords": [
+    "tradingview",
+    "charting",
+    "technical-analysis",
+    "typescript",
+    "market-data",
+    "websocket"
+  ],
+  "author": "KITTclick",
+  "license": "MIT"
+}

@@ -55,10 +55,10 @@
 
 ```bash
 # Clone the repository
-git clone https://github.com/<your-username>/quantpulse-terminal.git
+git clone https://github.com/KITTclick/indicator-app.git
 
 # Navigate to directory
-cd quantpulse-terminal
+cd indicator-app
 
 # Install dependencies
 npm install
