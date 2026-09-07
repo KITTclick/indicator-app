@@ -1,29 +1,823 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>QuantPulse Terminal</title>
-    <style>
-      body {
-        margin: 0;
-        padding: 20px;
-        background-color: #060911;
-        color: #fff;
-        font-family: system-ui, -apple-system, sans-serif;
-      }
-      #chart-container {
-        width: 100%;
-        height: 500px;
-        border-radius: 12px;
-        overflow: hidden;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-      }
-    </style>
-  </head>
-  <body>
-    <h1>QuantPulse Terminal</h1>
-    <div id="chart-container"></div>
-    <script type="module" src="/src/main.ts"></script>
-  </body>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🌌 KITT• Suite v6 — Antigravity Spatial Terminal</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  
+  <!-- GSAP for Buttery-Smooth Antigravity Motion -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  
+  <!-- Lightweight Charts v5 Standalone -->
+  <script src="https://unpkg.com/lightweight-charts@5.0.9/dist/lightweight-charts.standalone.production.js"></script>
+
+  <style>
+    :root {
+      --bg-darkest: #03060c;
+      --bg-surface: rgba(10, 16, 30, 0.65);
+      --bg-glass: rgba(15, 23, 42, 0.75);
+      --border-glass: rgba(255, 255, 255, 0.09);
+      --border-glow: rgba(0, 255, 204, 0.35);
+      --cyan: #00ffcc;
+      --cyan-glow: rgba(0, 255, 204, 0.4);
+      --crimson: #ff0055;
+      --crimson-glow: rgba(255, 0, 85, 0.4);
+      --purple: #8b5cf6;
+      --purple-glow: rgba(139, 92, 246, 0.35);
+      --gold: #ffb703;
+      --blue: #38bdf8;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --font-ui: 'Plus Jakarta Sans', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-darkest);
+      color: var(--text-main);
+      font-family: var(--font-ui);
+      min-height: 100vh;
+      overflow-x: hidden;
+      perspective: 1400px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Ambient Spatial Lighting */
+    .ambient-sphere {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(140px);
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.6;
+      transition: transform 0.2s cubic-bezier(0.1, 0.8, 0.2, 1);
+    }
+    .ambient-1 {
+      top: -10%; left: 15%; width: 500px; height: 500px;
+      background: radial-gradient(circle, var(--cyan-glow), transparent 70%);
+    }
+    .ambient-2 {
+      top: 30%; right: -5%; width: 600px; height: 600px;
+      background: radial-gradient(circle, var(--purple-glow), transparent 70%);
+    }
+    .ambient-3 {
+      bottom: -10%; left: 35%; width: 550px; height: 550px;
+      background: radial-gradient(circle, var(--crimson-glow), transparent 70%);
+    }
+
+    /* Mouse Follower Aura */
+    #cursor-aura {
+      position: fixed;
+      width: 400px;
+      height: 400px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0, 255, 204, 0.08) 0%, transparent 65%);
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      z-index: 1;
+      filter: blur(40px);
+    }
+
+    /* Top Antigravity Glass Nav */
+    header.terminal-nav {
+      height: 68px;
+      background: rgba(8, 13, 24, 0.7);
+      backdrop-filter: blur(28px) saturate(180%);
+      -webkit-backdrop-filter: blur(28px) saturate(180%);
+      border-bottom: 1px solid var(--border-glass);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-logo {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--cyan) 0%, var(--purple) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 18px;
+      color: #050811;
+      box-shadow: 0 0 20px var(--cyan-glow);
+      transform: translateZ(10px);
+    }
+
+    .brand-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-title span.badge {
+      font-size: 11px;
+      font-family: var(--font-mono);
+      background: rgba(0, 255, 204, 0.12);
+      color: var(--cyan);
+      border: 1px solid var(--border-glow);
+      padding: 3px 10px;
+      border-radius: 999px;
+      margin-left: 8px;
+      font-weight: 700;
+      box-shadow: 0 0 12px rgba(0, 255, 204, 0.2);
+    }
+
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .btn-group {
+      display: flex;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-glass);
+      border-radius: 12px;
+      padding: 4px;
+      gap: 4px;
+      backdrop-filter: blur(12px);
+    }
+
+    .btn-tab {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 7px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      font-family: var(--font-mono);
+    }
+
+    .btn-tab:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .btn-tab.active {
+      background: rgba(0, 255, 204, 0.12);
+      color: var(--cyan);
+      border: 1px solid var(--border-glow);
+      box-shadow: 0 4px 16px rgba(0, 255, 204, 0.25);
+    }
+
+    .live-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--cyan);
+      background: rgba(0, 255, 204, 0.08);
+      border: 1px solid rgba(0, 255, 204, 0.25);
+      padding: 6px 14px;
+      border-radius: 999px;
+      box-shadow: 0 0 15px rgba(0, 255, 204, 0.15);
+    }
+
+    .live-ping {
+      width: 8px;
+      height: 8px;
+      background: var(--cyan);
+      border-radius: 50%;
+      box-shadow: 0 0 12px var(--cyan);
+      animation: pulse 1.4s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.4); opacity: 0.5; }
+    }
+
+    /* Spatial Floating KPI Cards (Top Strip) */
+    .kpi-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      padding: 20px 28px;
+      position: relative;
+      z-index: 10;
+      transform-style: preserve-3d;
+    }
+
+    .spatial-card {
+      background: var(--bg-surface);
+      backdrop-filter: blur(24px) saturate(190%);
+      -webkit-backdrop-filter: blur(24px) saturate(190%);
+      border: 1px solid var(--border-glass);
+      border-radius: 18px;
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      box-shadow: 
+        0 20px 40px -10px rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s, border-color 0.4s;
+      transform: translateZ(0);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .spatial-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%; width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+      transition: left 0.6s;
+    }
+
+    .spatial-card:hover::before {
+      left: 100%;
+    }
+
+    .spatial-card:hover {
+      transform: translateY(-5px) translateZ(20px) scale(1.02);
+      border-color: rgba(0, 255, 204, 0.4);
+      box-shadow: 
+        0 30px 60px -12px rgba(0, 255, 204, 0.2),
+        0 18px 36px -18px rgba(0, 0, 0, 0.8),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    .kpi-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .kpi-value {
+      font-size: 1.45rem;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    .kpi-sub {
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .kpi-meter {
+      width: 100%;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+
+    .kpi-meter-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Main Terminal Workspace */
+    .terminal-body {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 20px;
+      padding: 0 28px 28px;
+      position: relative;
+      z-index: 10;
+      transform-style: preserve-3d;
+    }
+
+    /* Spatial Sidebar Suite */
+    aside.suite-sidebar {
+      background: var(--bg-surface);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border: 1px solid var(--border-glass);
+      border-radius: 24px;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+      padding: 8px 0;
+    }
+
+    .sidebar-section-title {
+      padding: 16px 24px 8px;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      margin-bottom: 4px;
+    }
+
+    .indicator-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: pointer;
+    }
+
+    .indicator-item:hover {
+      background: rgba(255, 255, 255, 0.04);
+      transform: translateX(4px);
+    }
+
+    .indicator-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .indicator-icon {
+      font-size: 16px;
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.04);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .indicator-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: #e2e8f0;
+    }
+
+    .indicator-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Antigravity Switch Toggle */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 38px;
+      height: 20px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(255, 255, 255, 0.1);
+      transition: .3s cubic-bezier(0.16, 1, 0.3, 1);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 14px;
+      width: 14px;
+      left: 2px;
+      bottom: 2px;
+      background-color: #cbd5e1;
+      transition: .3s cubic-bezier(0.16, 1, 0.3, 1);
+      border-radius: 50%;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+    }
+
+    input:checked + .slider {
+      background-color: var(--cyan);
+      box-shadow: 0 0 14px var(--cyan-glow);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(18px);
+      background-color: #03060c;
+    }
+
+    /* Main Chart Showcase Stage */
+    main.chart-stage {
+      background: var(--bg-surface);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border: 1px solid var(--border-glass);
+      border-radius: 24px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.8);
+      transform: translateZ(0);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    #main-chart-wrapper {
+      position: relative;
+      flex: 3;
+      width: 100%;
+      min-height: 420px;
+      background: rgba(3, 6, 12, 0.6);
+    }
+
+    #osc-chart-wrapper {
+      position: relative;
+      flex: 1.6;
+      width: 100%;
+      border-top: 1px solid var(--border-glass);
+      min-height: 180px;
+      background: rgba(3, 6, 12, 0.6);
+    }
+
+    /* 3D Floating HUD Badge */
+    .chart-overlay-badge {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 20;
+      background: rgba(6, 11, 22, 0.85);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-glass);
+      border-radius: 14px;
+      padding: 10px 18px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      pointer-events: none;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6);
+    }
+
+    .chart-overlay-badge span.accent {
+      color: var(--cyan);
+      font-weight: 700;
+      text-shadow: 0 0 10px var(--cyan-glow);
+    }
+
+    #bubble-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 5;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient Glowing Spatial Spheres -->
+  <div class="ambient-sphere ambient-1"></div>
+  <div class="ambient-sphere ambient-2"></div>
+  <div class="ambient-sphere ambient-3"></div>
+  <div id="cursor-aura"></div>
+
+  <!-- Top Glass Nav -->
+  <header class="terminal-nav">
+    <div class="brand">
+      <div class="brand-logo">Ω</div>
+      <div class="brand-title">
+        KITT• Suite <span class="badge">v6.2 ANTIGRAVITY QUANT</span>
+      </div>
+    </div>
+
+    <div class="nav-controls">
+      <!-- Symbol Selector -->
+      <div class="btn-group" id="symbol-group">
+        <button class="btn-tab active" data-symbol="BTCUSDT">BTC/USDT</button>
+        <button class="btn-tab" data-symbol="ETHUSDT">ETH/USDT</button>
+        <button class="btn-tab" data-symbol="SOLUSDT">SOL/USDT</button>
+      </div>
+
+      <!-- Timeframe Selector -->
+      <div class="btn-group" id="tf-group">
+        <button class="btn-tab" data-tf="1s">1s Ticks</button>
+        <button class="btn-tab active" data-tf="1m">1m</button>
+        <button class="btn-tab" data-tf="5m">5m</button>
+        <button class="btn-tab" data-tf="15m">15m</button>
+        <button class="btn-tab" data-tf="1h">1H</button>
+      </div>
+
+      <div class="live-status">
+        <div class="live-ping"></div>
+        <span id="ws-status">BINANCE LIVE WS FEED</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Floating Spatial KPI Strip -->
+  <section class="kpi-strip">
+    <!-- 6. The Bitcoin Ω-Score -->
+    <div class="spatial-card" id="kpi-omega">
+      <div class="kpi-header">
+        <span>6. The Bitcoin Ω-Score</span>
+        <span style="color: var(--cyan); text-shadow: 0 0 10px var(--cyan-glow);">🟢 UNDERVALUED</span>
+      </div>
+      <div class="kpi-value" style="color: var(--cyan);">
+        Ω 4.88 <span class="kpi-sub" style="color: var(--text-muted);">/ 5.00</span>
+      </div>
+      <div class="kpi-meter">
+        <div class="kpi-meter-fill" style="width: 88%; background: linear-gradient(90deg, var(--blue), var(--cyan)); box-shadow: 0 0 10px var(--cyan-glow);"></div>
+      </div>
+    </div>
+
+    <!-- 5. BTC Sortino Ratio -->
+    <div class="spatial-card" id="kpi-sortino">
+      <div class="kpi-header">
+        <span>5. BTC Sortino Ratio</span>
+        <span style="color: var(--gold); text-shadow: 0 0 10px rgba(255, 183, 3, 0.4);">HIGH ALPHA</span>
+      </div>
+      <div class="kpi-value" style="color: var(--gold);">
+        3.46 <span class="kpi-sub" style="color: var(--text-muted);">Sharpe 2.21</span>
+      </div>
+      <div class="kpi-meter">
+        <div class="kpi-meter-fill" style="width: 76%; background: var(--gold); box-shadow: 0 0 10px rgba(255, 183, 3, 0.4);"></div>
+      </div>
+    </div>
+
+    <!-- 8. Short-Term Risk Score -->
+    <div class="spatial-card" id="kpi-risk">
+      <div class="kpi-header">
+        <span>8. Short-Term Risk</span>
+        <span style="color: var(--cyan);">LOW VOLATILITY RISK</span>
+      </div>
+      <div class="kpi-value" style="color: var(--cyan);">
+        17.9 <span class="kpi-sub" style="color: var(--text-muted);">/ 100.0</span>
+      </div>
+      <div class="kpi-meter">
+        <div class="kpi-meter-fill" style="width: 17.9%; background: var(--cyan); box-shadow: 0 0 10px var(--cyan-glow);"></div>
+      </div>
+    </div>
+
+    <!-- 10. Whale Flow Meter -->
+    <div class="spatial-card" id="kpi-whale">
+      <div class="kpi-header">
+        <span>10. Whale Flow Meter</span>
+        <span style="color: var(--cyan);">+ACCUMULATION</span>
+      </div>
+      <div class="kpi-value" style="color: var(--cyan);" id="whale-tape-val">
+        +$5.14M <span class="kpi-sub" style="color: var(--text-muted);">15m Delta</span>
+      </div>
+      <div class="kpi-meter">
+        <div class="kpi-meter-fill" style="width: 72%; background: linear-gradient(90deg, var(--purple), var(--cyan)); box-shadow: 0 0 10px var(--cyan-glow);"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Workspace Body -->
+  <div class="terminal-body">
+    
+    <!-- Sidebar: All 11 Suite Modules -->
+    <aside class="suite-sidebar">
+      <div class="sidebar-section-title">KITT• Quantitative Suite (11 Modułów)</div>
+
+      <!-- 1. KITT Suite v6 (Główny) -->
+      <div class="indicator-item">
+        <div class="indicator-info">
+          <div class="indicator-icon">🤖</div>
+          <div>
+            <div class="indicator-name">KITT Suite v6 (Główny)</div>
+            <div class="indicator-desc">Core Momentum & ATR Volatility</div>
+          </div>
+        </div>
+        <label class="switch"><input type="checkbox" id="toggle-kitt" checked><span class="slider"></span></label>
+      </div>
+
+      <!-- 2. Volume Bubbles -->
+      <div class="indicator-item">
+        <div class="indicator-info">
+          <div class="indicator-icon">🫧</div>
+          <div>
+            <div class="indicator-name">Volume Bubbles</div>
+            <div class="indicator-desc">Institutional Absorption Clusters</div>
+          </div>
+        </div>
+        <label class="switch"><input type="checkbox" id="toggle-bubbles" checked><span class="slider"></span></label>
+      </div>
+
+      <!-- 3. Dynamic Trend Lines -->
+      <div class="indicator-item">
+        <div class="indicator-info">
+          <div class="indicator-icon">📐</div>
+          <div>
+            <div class="indicator-name">Dynamic Trend Lines</div>
+            <div class="indicator-desc">Multi-pivot Support/Resistance Rays</div>
+          </div>
+        </div>
+        <label class="switch"><input type="checkbox" id="toggle-trendlines" checked><span class="slider"></span></label>
+      </div>
+
+      <!-- 4. Kernel + TD9 Blocks -->
+      <div class="indicator-item">
+        <div class="indicator-info">
+          <div class="indicator-icon">🧠</div>
+          <div>
+            <div class="indicator-name">Kernel + TD9 Blocks</div>
+            <div class="indicator-desc">Nadaraya-Watson + Demark 9</div>
+          </div>
+        </div>
+        <label class="switch"><input type="checkbox" id="toggle-kernel" checked><span class="slider"></span></label>
+      </div>
+
+      <!-- 5. BTC Sortino Ratio -->
+      <div class="indicator-item">
+        <div class="indicator-info">
+          <div class="indicator-icon">📉</div>
+          <div>
+            <div class="indicator-name">BTC Sortino Ratio</div>
+            <div class="indicator-desc">Downside Risk-Adjusted Alpha</div>
+          </div>
+        </div>
+        <label class="switch"><input type="checkbox" checked disabled><span class="slider"></span></label>
+      </div>
+
+      <!-- 6. The Bitcoin Ω-Score -->
+      <div class="indicator-item">
+        <div class="indicator-info">
+          <div class="indicator-icon">🔮</div>
+          <div>
+            <div class="indicator-name">The Bitcoin Ω-Score</div>
+            <div class="indicator-desc">Macro Structural Valuation Index</div>
+          </div>
+        </div>
+        <label class="switch"><input type="checkbox" checked disabled><span class="slider"></span></label>
+      </div>
+
+      <!-- 7. Nebula Momentum -->
+      <div class="indicator-item">
+        <div class="indicator-info">
+          <div class="indicator-icon">🌌</div>
+          <div>
+            <div class="indicator-name">Nebula Momentum</div>
+            <div class="indicator-desc">Hyper-dimensional Phase Vectors</div>
+          </div>
+        </div>
+        <label class="switch"><input type="checkbox" id="toggle-nebula" checked><span class="slider"></span></label>
+      </div>
+
+      <!-- 8. Short-Term Risk Score -->
+      <div class="indicator-item">
+        <div class="indicator-info">
+          <div class="indicator-icon">⚠️</div>
+          <div>
+            <div class="indicator-name">Short-Term Risk Score</div>
+            <div class="indicator-desc">Leverage Liquidity Proximity</div>
+          </div>
+        </div>
+        <label class="switch"><input type="checkbox" checked disabled><span class="slider"></span></label>
+      </div>
+
+      <!-- 9. Premium Oscillator Suite -->
+      <div class="indicator-item">
+        <div class="indicator-info">
+          <div class="indicator-icon">🎛️</div>
+          <div>
+            <div class="indicator-name">Premium Oscillator Suite</div>
+            <div class="indicator-desc">WaveTrend + Deep Stoch Composite</div>
+          </div>
+        </div>
+        <label class="switch"><input type="checkbox" id="toggle-osc" checked><span class="slider"></span></label>
+      </div>
+
+      <!-- 10. Whale Flow Meter -->
+      <div class="indicator-item">
+        <div class="indicator-info">
+          <div class="indicator-icon">🐋</div>
+          <div>
+            <div class="indicator-name">Whale Flow Meter</div>
+            <div class="indicator-desc">Large Order Tape Sweep Detection</div>
+          </div>
+        </div>
+        <label class="switch"><input type="checkbox" checked disabled><span class="slider"></span></label>
+      </div>
+
+      <!-- 11. Whale Volume Matrix -->
+      <div class="indicator-item">
+        <div class="indicator-info">
+          <div class="indicator-icon">🧱</div>
+          <div>
+            <div class="indicator-name">Whale Volume Matrix</div>
+            <div class="indicator-desc">Order Book Spoof & Wall Analytics</div>
+          </div>
+        </div>
+        <label class="switch"><input type="checkbox" id="toggle-matrix" checked><span class="slider"></span></label>
+      </div>
+    </aside>
+
+    <!-- Main Chart & Subpanel Stage -->
+    <main class="chart-stage" id="main-stage">
+      
+      <!-- Top Overlay Floating Legend -->
+      <div class="chart-overlay-badge">
+        <span class="accent" id="badge-symbol">BTC/USDT</span>
+        <span id="badge-price" style="color: #fff; font-weight: 800; font-size: 13px;">$0.00</span>
+        <span id="badge-indicators" style="color: var(--text-muted);">ATR Zones: <span style="color: var(--cyan);">ACTIVE</span> | Kernel NW: <span style="color: var(--purple);">ACTIVE</span></span>
+      </div>
+
+      <!-- Main Candlestick Chart -->
+      <div id="main-chart-wrapper">
+        <canvas id="bubble-canvas"></canvas>
+      </div>
+
+      <!-- Sub-panel (Premium Oscillator Suite: WaveTrend + NVA) -->
+      <div id="osc-chart-wrapper"></div>
+    </main>
+
+  </div>
+
+  <!-- Interactive 3D Antigravity Motion Engine -->
+  <script>
+    // GSAP Interactive Mouse Tracking & Spatial Tilt
+    const cursorAura = document.getElementById('cursor-aura');
+    const cards = document.querySelectorAll('.spatial-card');
+    const mainStage = document.getElementById('main-stage');
+
+    window.addEventListener('mousemove', (e) => {
+      // Move cursor glow
+      gsap.to(cursorAura, {
+        x: e.clientX,
+        y: e.clientY,
+        duration: 0.4,
+        ease: 'power2.out',
+      });
+
+      // Subtle 3D Tilt on KPI Cards
+      const xNorm = (e.clientX / window.innerWidth) - 0.5;
+      const yNorm = (e.clientY / window.innerHeight) - 0.5;
+
+      cards.forEach(card => {
+        gsap.to(card, {
+          rotationY: xNorm * 12,
+          rotationX: -yNorm * 12,
+          transformPerspective: 1000,
+          ease: 'power1.out',
+          duration: 0.5,
+        });
+      });
+
+      // Ambient spheres slight parallax
+      gsap.to('.ambient-1', { x: xNorm * 40, y: yNorm * 40, duration: 1.2 });
+      gsap.to('.ambient-2', { x: -xNorm * 50, y: -yNorm * 50, duration: 1.2 });
+    });
+
+    // Staggered Entrance Animation on Load
+    window.addEventListener('DOMContentLoaded', () => {
+      gsap.from('.terminal-nav', { y: -40, opacity: 0, duration: 0.8, ease: 'power3.out' });
+      gsap.from('.spatial-card', {
+        y: 30,
+        opacity: 0,
+        stagger: 0.1,
+        duration: 0.8,
+        ease: 'back.out(1.4)',
+        delay: 0.2
+      });
+      gsap.from('.suite-sidebar', { x: -40, opacity: 0, duration: 0.9, ease: 'power3.out', delay: 0.4 });
+      gsap.from('.chart-stage', { scale: 0.96, opacity: 0, duration: 1, ease: 'power3.out', delay: 0.5 });
+    });
+  </script>
+
+  <!-- Terminal Engine Script -->
+  <script type="module" src="/src/main.ts"></script>
+</body>
 </html>
